@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.logs.mapper.LogQueryMapper">
+    
+    <resultMap type="com.ruoyi.logs.domain.LogQuery" id="LogQueryResult">
+        <result property="id" column="id"/>
+        <result property="query" column="query"/>
+        <result property="minutes" column="minutes"/>
+        <result property="limit" column="query_limit"/>
+        <result property="result" column="result"/>
+        <result property="status" column="status"/>
+        <result property="errorMsg" column="error_msg"/>
+    </resultMap>
+
+    <sql id="selectLogQueryVo">
+        select id, query, minutes, query_limit, result, status, error_msg
+        from log_query
+    </sql>
+
+    <select id="selectLogQueryList" parameterType="com.ruoyi.logs.domain.LogQuery" resultMap="LogQueryResult">
+        <include refid="selectLogQueryVo"/>
+        <where>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <insert id="insertLogQuery" parameterType="com.ruoyi.logs.domain.LogQuery" useGeneratedKeys="true" keyProperty="id">
+        insert into log_query
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="query != null">query,</if>
+            <if test="minutes != null">minutes,</if>
+            <if test="limit != null">query_limit,</if>
+            <if test="result != null">result,</if>
+            <if test="status != null">status,</if>
+            <if test="errorMsg != null">error_msg,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="query != null">#{query},</if>
+            <if test="minutes != null">#{minutes},</if>
+            <if test="limit != null">#{limit},</if>
+            <if test="result != null">#{result},</if>
+            <if test="status != null">#{status},</if>
+            <if test="errorMsg != null">#{errorMsg},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteLogQueryById" parameterType="Long">
+        delete from log_query where id = #{id}
+    </delete>
+</mapper>

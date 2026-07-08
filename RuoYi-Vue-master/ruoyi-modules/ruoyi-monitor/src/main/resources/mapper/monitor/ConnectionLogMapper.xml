@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.monitor.mapper.ConnectionLogMapper">
+    
+    <resultMap type="com.ruoyi.monitor.domain.ConnectionLog" id="ConnectionLogResult">
+        <result property="id" column="id"/>
+        <result property="time" column="time"/>
+        <result property="type" column="type"/>
+        <result property="prometheusStatus" column="prometheus_status"/>
+        <result property="alertmanagerStatus" column="alertmanager_status"/>
+        <result property="latency" column="latency"/>
+        <result property="version" column="version"/>
+        <result property="message" column="message"/>
+        <result property="operator" column="operator"/>
+    </resultMap>
+
+    <sql id="selectConnectionLogVo">
+        select id, time, type, prometheus_status, alertmanager_status, latency, version, message, operator
+        from connection_log
+    </sql>
+
+    <select id="selectConnectionLogList" parameterType="com.ruoyi.monitor.domain.ConnectionLog" resultMap="ConnectionLogResult">
+        <include refid="selectConnectionLogVo"/>
+        <where>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+        </where>
+        order by time desc
+    </select>
+
+    <insert id="insertConnectionLog" parameterType="com.ruoyi.monitor.domain.ConnectionLog" useGeneratedKeys="true" keyProperty="id">
+        insert into connection_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="time != null">time,</if>
+            <if test="type != null">type,</if>
+            <if test="prometheusStatus != null">prometheus_status,</if>
+            <if test="alertmanagerStatus != null">alertmanager_status,</if>
+            <if test="latency != null">latency,</if>
+            <if test="version != null">version,</if>
+            <if test="message != null">message,</if>
+            <if test="operator != null">operator,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="time != null">#{time},</if>
+            <if test="type != null">#{type},</if>
+            <if test="prometheusStatus != null">#{prometheusStatus},</if>
+            <if test="alertmanagerStatus != null">#{alertmanagerStatus},</if>
+            <if test="latency != null">#{latency},</if>
+            <if test="version != null">#{version},</if>
+            <if test="message != null">#{message},</if>
+            <if test="operator != null">#{operator},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteConnectionLogById" parameterType="Long">
+        delete from connection_log where id = #{id}
+    </delete>
+
+    <delete id="deleteConnectionLogAll">
+        delete from connection_log
+    </delete>
+</mapper>

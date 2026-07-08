@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AiConfigMapper">
+    
+    <resultMap type="AiConfig" id="AiConfigResult">
+    	<id     property="id"      column="id"      />
+        <result property="configKey"    column="config_key"    />
+        <result property="configValue"     column="config_value"     />
+        <result property="description"   column="description"   />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+    
+    <sql id="selectAiConfigVo">
+        select id, config_key, config_value, description, create_by, create_time, update_time 
+		from monitor_ai_config
+    </sql>
+    
+    <select id="selectAiConfigList" parameterType="AiConfig" resultMap="AiConfigResult">
+        <include refid="selectAiConfigVo"/>
+        <where>
+			<if test="configKey != null and configKey != ''">
+				AND config_key like concat('%', #{configKey}, '%')
+			</if>
+		</where>
+    </select>
+    
+    <select id="selectAiConfigById" parameterType="Long" resultMap="AiConfigResult">
+        <include refid="selectAiConfigVo"/>
+        where id = #{id}
+    </select>
+    
+    <select id="selectAiConfigByKey" parameterType="String" resultMap="AiConfigResult">
+        <include refid="selectAiConfigVo"/>
+        where config_key = #{configKey}
+    </select>
+    
+    <insert id="insertAiConfig" parameterType="AiConfig">
+        insert into monitor_ai_config (
+			<if test="configKey != null and configKey != ''">config_key,</if>
+			<if test="configValue != null and configValue != ''">config_value,</if>
+			<if test="description != null and description != ''">description,</if>
+			<if test="createBy != null and createBy != ''">create_by,</if>
+			create_time
+        )values(
+			<if test="configKey != null and configKey != ''">#{configKey},</if>
+			<if test="configValue != null and configValue != ''">#{configValue},</if>
+			<if test="description != null and description != ''">#{description},</if>
+			<if test="createBy != null and createBy != ''">#{createBy},</if>
+			sysdate()
+		)
+    </insert>
+ 
+    <update id="updateAiConfig" parameterType="AiConfig">
+        update monitor_ai_config 
+        <set>
+            <if test="configValue != null">config_value = #{configValue},</if>
+            <if test="description != null">description = #{description},</if>
+			update_time = sysdate()
+        </set>
+        where config_key = #{configKey}
+    </update>
+	
+    <delete id="deleteAiConfigById" parameterType="Long">
+        delete from monitor_ai_config where id = #{id}
+    </delete>
+    
+    <delete id="deleteAiConfigByIds" parameterType="Long">
+        delete from monitor_ai_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+        	#{id}
+        </foreach>
+    </delete>
+    
+</mapper>

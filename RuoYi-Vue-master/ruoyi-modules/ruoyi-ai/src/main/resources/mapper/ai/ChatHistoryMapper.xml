@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ai.mapper.ChatHistoryMapper">
+    
+    <resultMap type="com.ruoyi.ai.domain.ChatHistory" id="ChatHistoryResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userMessage" column="user_message"/>
+        <result property="aiResponse" column="ai_response"/>
+        <result property="model" column="model"/>
+        <result property="tokens" column="tokens"/>
+    </resultMap>
+
+    <sql id="selectChatHistoryVo">
+        select id, user_id, user_message, ai_response, model, tokens
+        from chat_history
+    </sql>
+
+    <select id="selectChatHistoryList" parameterType="com.ruoyi.ai.domain.ChatHistory" resultMap="ChatHistoryResult">
+        <include refid="selectChatHistoryVo"/>
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <insert id="insertChatHistory" parameterType="com.ruoyi.ai.domain.ChatHistory" useGeneratedKeys="true" keyProperty="id">
+        insert into chat_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userMessage != null">user_message,</if>
+            <if test="aiResponse != null">ai_response,</if>
+            <if test="model != null">model,</if>
+            <if test="tokens != null">tokens,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userMessage != null">#{userMessage},</if>
+            <if test="aiResponse != null">#{aiResponse},</if>
+            <if test="model != null">#{model},</if>
+            <if test="tokens != null">#{tokens},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteChatHistoryById" parameterType="Long">
+        delete from chat_history where id = #{id}
+    </delete>
+
+    <delete id="deleteChatHistoryAll">
+        delete from chat_history
+    </delete>
+</mapper>

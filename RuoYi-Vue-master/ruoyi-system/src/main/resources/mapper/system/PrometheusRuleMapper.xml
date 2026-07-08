@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PrometheusRuleMapper">
+    
+    <resultMap type="PrometheusRule" id="PrometheusRuleResult">
+    	<id     property="id"      column="id"      />
+        <result property="name"    column="name"    />
+        <result property="type"     column="type"     />
+        <result property="expr"   column="expr"   />
+        <result property="forDuration" column="for"   />
+        <result property="labels"   column="labels"   />
+        <result property="annotations" column="annotations"   />
+        <result property="enabled"      column="enabled"      />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+    
+    <sql id="selectPrometheusRuleVo">
+        select id, name, type, expr, `for`, labels, annotations, enabled, create_by, create_time, update_time 
+		from monitor_prometheus_rules
+    </sql>
+    
+    <select id="selectPrometheusRuleList" parameterType="PrometheusRule" resultMap="PrometheusRuleResult">
+        <include refid="selectPrometheusRuleVo"/>
+        <where>
+			<if test="name != null and name != ''">
+				AND name like concat('%', #{name}, '%')
+			</if>
+			<if test="type != null and type != ''">
+				AND type = #{type}
+			</if>
+			<if test="enabled != null">
+				AND enabled = #{enabled}
+			</if>
+		</where>
+    </select>
+    
+    <select id="selectPrometheusRuleById" parameterType="Long" resultMap="PrometheusRuleResult">
+        <include refid="selectPrometheusRuleVo"/>
+        where id = #{id}
+    </select>
+    
+    <insert id="insertPrometheusRule" parameterType="PrometheusRule">
+        insert into monitor_prometheus_rules (
+			<if test="name != null and name != ''">name,</if>
+			<if test="type != null and type != ''">type,</if>
+			<if test="expr != null and expr != ''">expr,</if>
+			<if test="forDuration != null and forDuration != ''">`for`,</if>
+			<if test="labels != null and labels != ''">labels,</if>
+			<if test="annotations != null and annotations != ''">annotations,</if>
+			<if test="enabled != null">enabled,</if>
+			<if test="createBy != null and createBy != ''">create_by,</if>
+			create_time
+        )values(
+			<if test="name != null and name != ''">#{name},</if>
+			<if test="type != null and type != ''">#{type},</if>
+			<if test="expr != null and expr != ''">#{expr},</if>
+			<if test="forDuration != null and forDuration != ''">#{forDuration},</if>
+			<if test="labels != null and labels != ''">#{labels},</if>
+			<if test="annotations != null and annotations != ''">#{annotations},</if>
+			<if test="enabled != null">#{enabled},</if>
+			<if test="createBy != null and createBy != ''">#{createBy},</if>
+			sysdate()
+		)
+    </insert>
+ 
+    <update id="updatePrometheusRule" parameterType="PrometheusRule">
+        update monitor_prometheus_rules 
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="expr != null and expr != ''">expr = #{expr},</if>
+            <if test="forDuration != null and forDuration != ''">`for` = #{forDuration},</if>
+            <if test="labels != null and labels != ''">labels = #{labels},</if>
+            <if test="annotations != null and annotations != ''">annotations = #{annotations},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+			update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+	
+    <delete id="deletePrometheusRuleById" parameterType="Long">
+        delete from monitor_prometheus_rules where id = #{id}
+    </delete>
+    
+    <delete id="deletePrometheusRuleByIds" parameterType="Long">
+        delete from monitor_prometheus_rules where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+        	#{id}
+        </foreach>
+    </delete>
+    
+</mapper>

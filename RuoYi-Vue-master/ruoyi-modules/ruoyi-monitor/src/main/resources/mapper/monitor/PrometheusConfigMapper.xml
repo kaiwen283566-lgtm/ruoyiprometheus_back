@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.monitor.mapper.PrometheusConfigMapper">
+    
+    <resultMap type="com.ruoyi.monitor.domain.PrometheusConfig" id="PrometheusConfigResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="prometheusUrl" column="prometheus_url"/>
+        <result property="alertmanagerUrl" column="alertmanager_url"/>
+        <result property="alertmanagerEnabled" column="alertmanager_enabled"/>
+        <result property="scrapeInterval" column="scrape_interval"/>
+        <result property="enabled" column="enabled"/>
+        <result property="lastSync" column="last_sync"/>
+    </resultMap>
+
+    <sql id="selectPrometheusConfigVo">
+        select id, name, prometheus_url, alertmanager_url, alertmanager_enabled, scrape_interval, enabled, last_sync
+        from prometheus_config
+    </sql>
+
+    <select id="selectPrometheusConfigList" parameterType="com.ruoyi.monitor.domain.PrometheusConfig" resultMap="PrometheusConfigResult">
+        <include refid="selectPrometheusConfigVo"/>
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="enabled != null">
+                and enabled = #{enabled}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPrometheusConfigById" parameterType="Long" resultMap="PrometheusConfigResult">
+        <include refid="selectPrometheusConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPrometheusConfig" parameterType="com.ruoyi.monitor.domain.PrometheusConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into prometheus_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="prometheusUrl != null and prometheusUrl != ''">prometheus_url,</if>
+            <if test="alertmanagerUrl != null">alertmanager_url,</if>
+            <if test="alertmanagerEnabled != null">alertmanager_enabled,</if>
+            <if test="scrapeInterval != null">scrape_interval,</if>
+            <if test="enabled != null">enabled,</if>
+            <if test="lastSync != null">last_sync,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="prometheusUrl != null and prometheusUrl != ''">#{prometheusUrl},</if>
+            <if test="alertmanagerUrl != null">#{alertmanagerUrl},</if>
+            <if test="alertmanagerEnabled != null">#{alertmanagerEnabled},</if>
+            <if test="scrapeInterval != null">#{scrapeInterval},</if>
+            <if test="enabled != null">#{enabled},</if>
+            <if test="lastSync != null">#{lastSync},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePrometheusConfig" parameterType="com.ruoyi.monitor.domain.PrometheusConfig">
+        update prometheus_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="prometheusUrl != null and prometheusUrl != ''">prometheus_url = #{prometheusUrl},</if>
+            <if test="alertmanagerUrl != null">alertmanager_url = #{alertmanagerUrl},</if>
+            <if test="alertmanagerEnabled != null">alertmanager_enabled = #{alertmanagerEnabled},</if>
+            <if test="scrapeInterval != null">scrape_interval = #{scrapeInterval},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="lastSync != null">last_sync = #{lastSync},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePrometheusConfigById" parameterType="Long">
+        delete from prometheus_config where id = #{id}
+    </delete>
+
+    <delete id="deletePrometheusConfigByIds" parameterType="Long">
+        delete from prometheus_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

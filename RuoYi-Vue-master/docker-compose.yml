@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: aiops-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: ry-vue
+      MYSQL_USER: aiops
+      MYSQL_PASSWORD: aiops123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - aiops-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # 后端应用
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aiops-backend
+    ports:
+      - "8084:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ry-vue?useUnicode=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: aiops
+      SPRING_DATASOURCE_PASSWORD: aiops123
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      AIOPS_PROMETHEUS_URL: http://host.docker.internal:19090
+      AIOPS_LOKI_URL: http://host.docker.internal:3100
+      AIOPS_OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - aiops-network
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 前端应用（使用8083端口避免冲突）
+  frontend:
+    build:
+      context: ./ruoyi-ui
+      dockerfile: Dockerfile
+    container_name: aiops-frontend
+    ports:
+      - "8083:80"
+    depends_on:
+      - backend
+    networks:
+      - aiops-network
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  mysql-data:
+
+networks:
+  aiops-network:
+    driver: bridge

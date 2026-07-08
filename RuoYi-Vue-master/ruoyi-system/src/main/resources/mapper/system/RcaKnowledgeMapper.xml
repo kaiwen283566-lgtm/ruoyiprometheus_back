@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RcaKnowledgeMapper">
+    
+    <resultMap type="RcaKnowledge" id="RcaKnowledgeResult">
+    	<id     property="id"      column="id"      />
+        <result property="title"    column="title"    />
+        <result property="alertPattern"     column="alert_pattern"     />
+        <result property="symptoms"   column="symptoms"   />
+        <result property="rootCause"    column="root_cause"    />
+        <result property="solution"     column="solution"     />
+        <result property="tags"   column="tags"   />
+        <result property="confidence"      column="confidence"      />
+        <result property="hitCount"    column="hit_count"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+    
+    <sql id="selectRcaKnowledgeVo">
+        select id, title, alert_pattern, symptoms, root_cause, solution, tags, confidence, hit_count, created_by, create_time, update_time 
+		from monitor_rca_knowledge
+    </sql>
+    
+    <select id="selectRcaKnowledgeList" parameterType="RcaKnowledge" resultMap="RcaKnowledgeResult">
+        <include refid="selectRcaKnowledgeVo"/>
+        <where>
+			<if test="title != null and title != ''">
+				AND title like concat('%', #{title}, '%')
+			</if>
+			<if test="tags != null and tags != ''">
+				AND tags like concat('%', #{tags}, '%')
+			</if>
+		</where>
+    </select>
+    
+    <select id="selectRcaKnowledgeById" parameterType="Long" resultMap="RcaKnowledgeResult">
+        <include refid="selectRcaKnowledgeVo"/>
+        where id = #{id}
+    </select>
+    
+    <insert id="insertRcaKnowledge" parameterType="RcaKnowledge">
+        insert into monitor_rca_knowledge (
+			<if test="title != null and title != ''">title,</if>
+			<if test="alertPattern != null and alertPattern != ''">alert_pattern,</if>
+			<if test="symptoms != null and symptoms != ''">symptoms,</if>
+			<if test="rootCause != null and rootCause != ''">root_cause,</if>
+			<if test="solution != null and solution != ''">solution,</if>
+			<if test="tags != null and tags != ''">tags,</if>
+			<if test="confidence != null and confidence != ''">confidence,</if>
+			<if test="createdBy != null and createdBy != ''">created_by,</if>
+			create_time
+        )values(
+			<if test="title != null and title != ''">#{title},</if>
+			<if test="alertPattern != null and alertPattern != ''">#{alertPattern},</if>
+			<if test="symptoms != null and symptoms != ''">#{symptoms},</if>
+			<if test="rootCause != null and rootCause != ''">#{rootCause},</if>
+			<if test="solution != null and solution != ''">#{solution},</if>
+			<if test="tags != null and tags != ''">#{tags},</if>
+			<if test="confidence != null and confidence != ''">#{confidence},</if>
+			<if test="createdBy != null and createdBy != ''">#{createdBy},</if>
+			sysdate()
+		)
+    </insert>
+ 
+    <update id="updateRcaKnowledge" parameterType="RcaKnowledge">
+        update monitor_rca_knowledge 
+        <set>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="alertPattern != null and alertPattern != ''">alert_pattern = #{alertPattern},</if>
+            <if test="symptoms != null and symptoms != ''">symptoms = #{symptoms},</if>
+            <if test="rootCause != null and rootCause != ''">root_cause = #{rootCause},</if>
+            <if test="solution != null and solution != ''">solution = #{solution},</if>
+            <if test="tags != null and tags != ''">tags = #{tags},</if>
+            <if test="confidence != null and confidence != ''">confidence = #{confidence},</if>
+			update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+	
+    <delete id="deleteRcaKnowledgeById" parameterType="Long">
+        delete from monitor_rca_knowledge where id = #{id}
+    </delete>
+    
+    <delete id="deleteRcaKnowledgeByIds" parameterType="Long">
+        delete from monitor_rca_knowledge where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+        	#{id}
+        </foreach>
+    </delete>
+    
+</mapper>

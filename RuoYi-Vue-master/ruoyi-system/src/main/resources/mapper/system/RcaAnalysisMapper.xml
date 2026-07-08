@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RcaAnalysisMapper">
+    
+    <resultMap type="RcaAnalysis" id="RcaAnalysisResult">
+    	<id     property="id"      column="id"      />
+        <result property="alertName"    column="alert_name"    />
+        <result property="alertFingerprint"     column="alert_fingerprint"     />
+        <result property="alertSummary"   column="alert_summary"   />
+        <result property="rootCause"    column="root_cause"    />
+        <result property="confidence"     column="confidence"     />
+        <result property="evidence"   column="evidence"   />
+        <result property="source"      column="source"      />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+    
+    <sql id="selectRcaAnalysisVo">
+        select id, alert_name, alert_fingerprint, alert_summary, root_cause, confidence, evidence, source, status, create_time, update_time 
+		from monitor_rca_analysis
+    </sql>
+    
+    <select id="selectRcaAnalysisList" parameterType="RcaAnalysis" resultMap="RcaAnalysisResult">
+        <include refid="selectRcaAnalysisVo"/>
+        <where>
+			<if test="alertName != null and alertName != ''">
+				AND alert_name like concat('%', #{alertName}, '%')
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+		</where>
+    </select>
+    
+    <select id="selectRcaAnalysisById" parameterType="Long" resultMap="RcaAnalysisResult">
+        <include refid="selectRcaAnalysisVo"/>
+        where id = #{id}
+    </select>
+    
+    <insert id="insertRcaAnalysis" parameterType="RcaAnalysis">
+        insert into monitor_rca_analysis (
+			<if test="alertName != null and alertName != ''">alert_name,</if>
+			<if test="alertFingerprint != null and alertFingerprint != ''">alert_fingerprint,</if>
+			<if test="alertSummary != null and alertSummary != ''">alert_summary,</if>
+			<if test="rootCause != null and rootCause != ''">root_cause,</if>
+			<if test="confidence != null and confidence != ''">confidence,</if>
+			<if test="evidence != null and evidence != ''">evidence,</if>
+			<if test="source != null and source != ''">source,</if>
+			<if test="status != null and status != ''">status,</if>
+			create_time
+        )values(
+			<if test="alertName != null and alertName != ''">#{alertName},</if>
+			<if test="alertFingerprint != null and alertFingerprint != ''">#{alertFingerprint},</if>
+			<if test="alertSummary != null and alertSummary != ''">#{alertSummary},</if>
+			<if test="rootCause != null and rootCause != ''">#{rootCause},</if>
+			<if test="confidence != null and confidence != ''">#{confidence},</if>
+			<if test="evidence != null and evidence != ''">#{evidence},</if>
+			<if test="source != null and source != ''">#{source},</if>
+			<if test="status != null and status != ''">#{status},</if>
+			sysdate()
+		)
+    </insert>
+ 
+    <update id="updateRcaAnalysis" parameterType="RcaAnalysis">
+        update monitor_rca_analysis 
+        <set>
+            <if test="alertName != null and alertName != ''">alert_name = #{alertName},</if>
+            <if test="alertFingerprint != null and alertFingerprint != ''">alert_fingerprint = #{alertFingerprint},</if>
+            <if test="alertSummary != null and alertSummary != ''">alert_summary = #{alertSummary},</if>
+            <if test="rootCause != null and rootCause != ''">root_cause = #{rootCause},</if>
+            <if test="confidence != null and confidence != ''">confidence = #{confidence},</if>
+            <if test="evidence != null and evidence != ''">evidence = #{evidence},</if>
+            <if test="source != null and source != ''">source = #{source},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+			update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+	
+    <delete id="deleteRcaAnalysisById" parameterType="Long">
+        delete from monitor_rca_analysis where id = #{id}
+    </delete>
+    
+    <delete id="deleteRcaAnalysisByIds" parameterType="Long">
+        delete from monitor_rca_analysis where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+        	#{id}
+        </foreach>
+    </delete>
+    
+</mapper>
