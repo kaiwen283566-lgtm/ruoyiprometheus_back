@@ -8,8 +8,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/monitor/loki")
@@ -29,7 +32,7 @@ public class LokiController {
         if (limit != null) {
             params.put("limit", limit);
         }
-        String result = HttpUtils.sendGet(url, params);
+        String result = HttpUtils.sendGet(url, buildQueryString(params));
         return AjaxResult.success(result);
     }
 
@@ -45,7 +48,7 @@ public class LokiController {
         if (limit != null) {
             params.put("limit", limit);
         }
-        String result = HttpUtils.sendGet(url, params);
+        String result = HttpUtils.sendGet(url, buildQueryString(params));
         return AjaxResult.success(result);
     }
 
@@ -63,5 +66,15 @@ public class LokiController {
         String url = aiOpsConfig.getLoki().getUrl() + "/loki/api/v1/label/" + name + "/values";
         String result = HttpUtils.sendGet(url);
         return AjaxResult.success(result);
+    }
+
+    private String buildQueryString(Map<String, String> params) {
+        return params.entrySet().stream()
+                .map(entry -> encode(entry.getKey()) + "=" + encode(entry.getValue()))
+                .collect(Collectors.joining("&"));
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.monitor;
 
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.config.AiOpsConfig;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.http.HttpUtils;
@@ -36,7 +37,7 @@ public class AlertmanagerController {
     @PostMapping("/silences")
     public AjaxResult addSilence(@RequestBody Map<String, Object> payload) {
         String url = aiOpsConfig.getPrometheus().getAlertmanager().getUrl() + "/api/v2/silences";
-        String result = HttpUtils.sendPost(url, payload);
+        String result = HttpUtils.sendPost(url, JSON.toJSONString(payload), "application/json");
         return AjaxResult.success(result);
     }
 

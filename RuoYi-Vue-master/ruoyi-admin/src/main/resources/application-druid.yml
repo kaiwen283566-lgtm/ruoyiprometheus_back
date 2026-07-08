@@ -6,9 +6,9 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
-                username: ${SPRING_DATASOURCE_USERNAME:root}
-                password: ${SPRING_DATASOURCE_PASSWORD:password}
+                url: ${SPRING_DATASOURCE_URL:jdbc:mysql://20.2.251.228:3306/aiops?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
+                username: ${SPRING_DATASOURCE_USERNAME:aiops}
+                password: ${SPRING_DATASOURCE_PASSWORD:NweX7md2MBrYpwim}
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭

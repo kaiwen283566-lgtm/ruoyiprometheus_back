@@ -11,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/monitor/prometheus")
@@ -32,7 +35,7 @@ public class PrometheusController extends BaseController {
         if (time != null) {
             params.put("time", String.valueOf(time));
         }
-        String result = HttpUtils.sendGet(url, params);
+        String result = HttpUtils.sendGet(url, buildQueryString(params));
         return AjaxResult.success(result);
     }
 
@@ -45,7 +48,7 @@ public class PrometheusController extends BaseController {
         params.put("start", String.valueOf(start));
         params.put("end", String.valueOf(end));
         params.put("step", step);
-        String result = HttpUtils.sendGet(url, params);
+        String result = HttpUtils.sendGet(url, buildQueryString(params));
         return AjaxResult.success(result);
     }
 
@@ -143,5 +146,15 @@ public class PrometheusController extends BaseController {
     @DeleteMapping("/rule/{ids}")
     public AjaxResult deleteRule(@PathVariable Long[] ids) {
         return toAjax(prometheusRuleService.deletePrometheusRuleByIds(ids));
+    }
+
+    private String buildQueryString(Map<String, String> params) {
+        return params.entrySet().stream()
+                .map(entry -> encode(entry.getKey()) + "=" + encode(entry.getValue()))
+                .collect(Collectors.joining("&"));
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
